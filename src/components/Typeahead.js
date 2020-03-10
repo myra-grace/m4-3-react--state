@@ -1,7 +1,6 @@
 //THIS IS A HOOK TYPE
 import React from 'react';
 import styled from 'styled-components';
-import { clamp } from '../utils';
 
 const StyledDiv = styled.div`
     width: 200px;
@@ -31,11 +30,21 @@ const InputContainer = styled.div`
 const ListItem = styled.li`
     font-size: 14px;
 
+    background: ${props => props.theme.bg};
+
     &:hover {
         cursor: pointer;
         background-color: lightyellow;
     }
 `
+
+const theme = {
+    bg: 'white'
+};
+
+const invertTheme = {
+    bg: 'lightyellow'
+}
 
 export const Typeahead = ({ suggestions, handleSelect }) => {
     const [value, setValue] = React.useState('');
@@ -47,6 +56,7 @@ export const Typeahead = ({ suggestions, handleSelect }) => {
     });
 
     let choice = matchingSuggestions[choiceIndex];
+    console.log('choice: ', choice);
 
     return (
         <StyledDiv>
@@ -55,45 +65,35 @@ export const Typeahead = ({ suggestions, handleSelect }) => {
                     onChange={event => setValue(event.target.value)}
                     onKeyDown={event => {
                         switch (event.key) {
-                            case 'Enter': {
-                                handleSelect(choice);
-                                return;
-                            }
+                            case 'Enter': 
+                                handleSelect(choice.title);
+                                break;
+                            
+                            //CAN'T GET ARROW NAVIGATION TO WORK
                             case 'ArrowUp':
-                            case 'ArrowDown': {
-                                event.preventDefault();
-
-                                let direction = event.key === 'ArrowDown' ? 'down' : 'up';
-                                let next = choiceIndex;
-
-                                next = direction === 'down'
-                                    ? next +1
-                                    : next -1;
-
-                                next = clamp(
-                                    next, 0,
-                                    matchingSuggestions.length -1
-                                );
-
-                                setChoiceIndex(next);
-                                
-                                return;
-                            }
-
-                            default:
-                                return;
-                        }
-                    }}
+                                if (!(choiceIndex < 1)) {
+                                    setChoiceIndex(choiceIndex -1)
+                                }
+                                break;
+                            case 'ArrowDown':
+                                if (choiceIndex < matchingSuggestions.length -1) {
+                                    setChoiceIndex(choiceIndex +1)
+                                }
+                                break;
+                        };
+                    }
+                    }
+    
                 />
             
             <StyledButton onClick={() => setValue('')}>Clear</StyledButton>
         </InputContainer>
 
         <ul>
-            {matchingSuggestions.map(suggestion => {
+            {matchingSuggestions.map((suggestion, index) => {
+                const isSelected = (index === choiceIndex);
                 if (value.length > 1) {
-                    // let myIndex = value.length -1;
-                    return <ListItem key={suggestion.id} onClick={() => handleSelect(suggestion.title
+                    return <ListItem key={suggestion.id} theme={isSelected ? invertTheme : theme} onClick={() => handleSelect(suggestion.title
                     )}>{suggestion.title.slice(0, value.length)}<b>{suggestion.title.slice(value.length)}</b></ListItem>
                 }
             })}
@@ -105,3 +105,5 @@ export const Typeahead = ({ suggestions, handleSelect }) => {
 
 
 // handleSelect(event.target.value);
+
+//I got lost in git and nearly lost some files.. it was scary
