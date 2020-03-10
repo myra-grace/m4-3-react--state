@@ -12,7 +12,7 @@ State is _dynamic data_. Things that change.
 
 ```jsx live=true
 const Counter = () => {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = React.useState(0);  // 0 is initial value
 
   return (
     <>
@@ -86,13 +86,15 @@ This is why the values on the screen change.
 const Name = () => {
   const [name, setName] = React.useState('');
 
+  //can put a handler here
+
   return (
     <div style={{ fontSize: 32 }}>
       <input
         type="text"
         value={name}
         onChange={ev => {
-          setName(ev.target.value);
+          setName(ev.target.value); //then call the handle here instead of this format
         }}
         style={{ fontSize: 32 }}
       />
@@ -219,16 +221,19 @@ What happens when you want to share state between components?
 
 ```jsx
 const App = () => {
+  // const [searchTerm, setSearchTerm] = React.useState('');
   return (
     <>
-      <SearchInput />
+      <SearchInput 
+      // searchTerm={searchTerm}
+      // searchTerm={setSearchTerm}/>
       <SearchResults />
     </>
   )
 }
 
-const SearchInput = () => {
-  const [searchTerm, setSearchTerm] = React.useState('');
+const SearchInput = (//{searchTerm, SetSearachTerm}) => {
+  const [searchTerm, setSearchTerm] = React.useState(''); //MOVING THIS UP^
 
   return (
     <input
@@ -241,7 +246,7 @@ const SearchInput = () => {
   );
 }
 
-const SearchResults = () => {
+const SearchResults = (//{searchTerm}) => {
   // ??
 }
 ```
@@ -259,8 +264,8 @@ Lift state up in the following examples
 ---
 
 ```jsx live=true
-const Counter = () => {
-  const [count, setCount] = React.useState(0);
+const Counter = ({count, setCount}) => { //blue was added
+  const [count, setCount] = React.useState(0); //moving to app
 
   return (
     <>
@@ -271,12 +276,14 @@ const Counter = () => {
   )
 };
 
-const App = () => {
+const App = ({count, setCount}) => { //the blue in brackets {} was added
+  //const [count, setCount] = React.useState(0);
+
   return (
     <>
-      The current count is: ???
+      <p>The current count is: {count}</p>
 
-      <Counter />
+      <Counter count={count} setCount={setCount}/> //the blue was added
     </>
   )
 }
@@ -287,8 +294,8 @@ render(<App />)
 ---
 
 ```jsx live=true
-const FavouriteFood = () => {
-  const [food, setFood] = React.useState('');
+const FavouriteFood = ({setFood}) => { //BLUE WAS ADDED
+  const [food, setFood] = React.useState(''); //MOVING THIS
 
   return (
     <>
@@ -296,8 +303,8 @@ const FavouriteFood = () => {
         <input
           type="radio"
           name="food"
-          value="pizza"
-          checked={food === 'pizza'}
+          value="pizza" //this can be removed
+          // checked={food === 'pizza'} THIS IS REMOVED
           onChange={() => setFood('pizza')}
         />
         Pizza
@@ -306,8 +313,8 @@ const FavouriteFood = () => {
         <input
           type="radio"
           name="food"
-          value="broccoli"
-          checked={food === 'broccoli'}
+          value="broccoli" //this can be removed too
+          // checked={food === 'broccoli'} THIS IS REMOVED TOO
           onChange={() => setFood('broccoli')}
         />
         Broccoli
@@ -316,12 +323,16 @@ const FavouriteFood = () => {
   )
 };
 
-const App = () => {
+const App = () => { 
+    // const [food, setFood] = React.useState(''); // MOVED HERE
+
   return (
     <>
       My favourite food is: ???
       <br /><br />
-      <FavouriteFood />
+
+      // <br />My favourite food is: {food}<br />
+      <FavouriteFood food={food} setFood={setFood}/> //blue was added
     </>
   )
 }
@@ -343,11 +354,11 @@ render(<App />)
     <>
       <h3>What do you call someone with no body and no nose?</h3>
 
-      {showAnswer && (
+      {showAnswer && ( //&& is shorthand to toggle the false upstairs
         <p>Nobody knows!</p>
       )} 
       
-      <button onClick={() => setShowAnswer(true)}>
+      <button onClick={() => setShowAnswer(!showAnswer)}> //changed from true to !showAnswer
         Show punchline
       </button>
     </>

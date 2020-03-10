@@ -25,6 +25,15 @@ const BlueButton = styled.button`
   background: #2B00D7;
   color: #FFF;
 `
+// const BlueButton = styled(Button)`
+//   padding: 10px;
+//   margin: 10px;
+//   border-radius: 4px;
+//   font-size: 18px;
+//   font-weight: bold;
+//   background: #2B00D7;
+//   color: #FFF;
+// `
 
 render(<>
   <Button>Button 1</Button>
